@@ -8,20 +8,55 @@ router.get("/", async (req, res) => {
   res.send(posts);
 });
 
+// find the specific post
+router.get("/:postId", async (req, res) => {
+  console.log(req.params.body);
+  try {
+    const post = await Post.findById(req.params.postId);
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(400).json({ message: error });
+  }
+});
+
 // create the post
 router.post("/create", async (req, res) => {
   console.log(req.body);
 
   const post = new Post({
-    title: "Sample Title",
-    description: "Sample Description",
+    title: req.body.title,
+    description: req.body.description,
   });
 
   try {
     const savedPost = await post.save();
-    res.send(200).json(savedPost);
+    res.status(200).json(savedPost);
   } catch (error) {
-    res.status(500).json({ message: error });
+    console.log({ error });
+    res.status(400).json({ message: error });
+  }
+});
+
+// delete the post
+router.delete("/:postId", async (req, res) => {
+  try {
+    const deletedPost = await Post.remove({ _id: req.params.postId });
+    res.status(200).json(deletedPost);
+  } catch (error) {
+    res.status(400).json({ message: error });
+  }
+});
+
+// update the post
+router.patch("/:postId", async (req, res) => {
+  try {
+    const updatedPost = await Post.updateOne({
+      _id: req.params.postId,
+      title: "editTitled",
+    });
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    res.status(400).json({ message: error });
   }
 });
 
